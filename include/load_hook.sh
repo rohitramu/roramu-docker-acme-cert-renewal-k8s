@@ -22,7 +22,7 @@ mkdir -p $FRAGMENTS_DIR
 
 # Get data fragments
 while IFS= read -r DATA_FRAGMENT_NAME; do
-    if ! [ -z "$DATA_FRAGMENT_NAME" ]; do
+    if ! [ -z "$DATA_FRAGMENT_NAME" ]; then
         # Get next data fragment and save it to a file inside $FRAGMENTS_DIR
         get_data "$DATA_FRAGMENT_NAME" "$FRAGMENTS_DIR"
     fi
