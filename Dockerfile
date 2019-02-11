@@ -25,7 +25,7 @@
 #       - 80/tcp
 #       - 443/tcp
 #
-FROM roramu/acme-cert-renewal:latest
+FROM rohitramu/acme-cert-renewal:latest
 
 # Make sure we're working in the correct folder (specified by the parent image)
 WORKDIR $WORKING_DIR
@@ -41,7 +41,7 @@ RUN find ./ -type f -exec chmod +x {} \;
 ENV \
     # The name of the Kubernetes secret that holds the names of the other secrets
     # which contain fragments of the persisted data
-    PERSIST_NAME="acme-cert-renewal-persist" \
+    PERSIST_NAME="acme-cert-renewal" \
     # The location of helper functions that are used by the hook scripts
     HELPER_FUNC="$WORKING_DIR/k8s_helpers.sh"
 

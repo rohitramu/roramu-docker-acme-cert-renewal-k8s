@@ -10,8 +10,8 @@ DATA_SIZE_BYTES=500000
 . $HELPER_FUNC
 
 # Create tar archive from folder - give it a randomized name so it doesn't overwrite any existing files
-DATA_TAR=data.$(generate_uuid).tar.gz
-tar -czvf $DATA_TAR ${INPUT_DIR}/
+DATA_TAR=$PERSIST_NAME.$(generate_uuid).tar.gz
+tar -czvf $DATA_TAR $INPUT_DIR/
 
 # Clean working directory
 FRAGMENTS_DIR=fragments
@@ -19,7 +19,7 @@ rm -rf $FRAGMENTS_DIR/*
 mkdir -p $FRAGMENTS_DIR
 
 # Split tar archive into file fragments
-split --unbuffered --numeric-suffixes --suffix-length=3 --bytes=$DATA_SIZE_BYTES "$DATA_TAR" "${FRAGMENTS_DIR}/${DATA_TAR}."
+split --unbuffered --numeric-suffixes --suffix-length=3 --bytes=$DATA_SIZE_BYTES "$DATA_TAR" "$FRAGMENTS_DIR/$DATA_TAR."
 
 # Iterate over file fragments in order
 METADATA=""
@@ -30,11 +30,8 @@ for FILEPATH in "$FRAGMENTS_DIR"/*; do
     # Save this filename as a line in the metadata variable
     METADATA="${METADATA}${FILENAME}"$'\n'
 
-    # Convert file fragment to a base64 encoded string
-    BASE64_FRAGMENT=$(base64 -w 0 "$(cat $FILEPATH)")
-
-    # Save the data fragment
-    save_data "$FILENAME" "$BASE64_FRAGMENT"
+    # Save the data fragment in the file
+    save_data "$FILENAME" "$FILEPATH"
 done
 
 # If there were any data fragments that were saved, save the metadata as well

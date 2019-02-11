@@ -23,11 +23,8 @@ mkdir -p $FRAGMENTS_DIR
 # Get data fragments
 while IFS= read -r DATA_FRAGMENT_NAME; do
     if ! [ -z "$DATA_FRAGMENT_NAME" ]; do
-        # Get next data fragment
-        DATA_FRAGMENT=$(get_data $DATA_FRAGMENT_NAME)
-
-        # Restore file fragment from base64 encoded string and save it to a file
-        base64 --decode $DATA_FRAGMENT > $FRAGMENTS_DIR/$DATA_FRAGMENT_NAME
+        # Get next data fragment and save it to a file inside $FRAGMENTS_DIR
+        get_data "$DATA_FRAGMENT_NAME" "$FRAGMENTS_DIR"
     fi
 done < <(echo "$TO_GET")
 
