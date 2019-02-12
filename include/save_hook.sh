@@ -44,7 +44,7 @@ if ! [ -z "$METADATA" ]; then
 
     # Delete the old data fragments
     while IFS= read -r OLD_FRAGMENT_NAME; do
-        if ! [ -z $OLD_FRAGMENT_NAME ]; then
+        if ! [ -z "$OLD_FRAGMENT_NAME" ]; then
             # Delete the old data fragment
             delete_data "$OLD_FRAGMENT_NAME"
         fi

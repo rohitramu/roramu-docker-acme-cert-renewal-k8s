@@ -7,7 +7,12 @@ OUTPUT_DIR=$1
 . $HELPER_FUNC
 
 # Get metadata object
-TO_GET=$(get_data $PERSIST_NAME)
+TO_GET=$(get_data "$PERSIST_NAME")
+
+# Print the data we found
+echo "Found data:"
+echo $TO_GET
+echo ""
 
 # Only attempt to restore if we found the value
 if [ -z "$TO_GET" ]; then
