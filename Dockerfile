@@ -32,6 +32,28 @@
 #
 FROM rohitramu/acme-cert-renewal:latest
 
+RUN echo "" && \
+    # Install runtime tools
+    echo "+-----------------+" && \
+    echo "| Install kubectl |" && \
+    echo "+-----------------+" && \
+    apk add --update ca-certificates && \
+    curl -L https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl && \
+    chmod +x /usr/local/bin/kubectl && \
+    echo "" && \
+    echo "" && \
+    # Clean up
+    echo "+---------------------+" && \
+    echo "| Clean package cache |" && \
+    echo "+---------------------+" && \
+    rm /var/cache/apk/* && \
+    echo "" && \
+    echo "" && \
+    echo "+------------------------------+" && \
+    echo "| Finished installing packages |" && \
+    echo "+------------------------------+" && \
+    echo ""
+
 # Make sure we're working in the correct folder (specified by the parent image)
 WORKDIR $WORKING_DIR
 
