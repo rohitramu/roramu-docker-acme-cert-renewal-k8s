@@ -3,6 +3,22 @@
 # The name of the key used in the secrets that store persisted data
 VALUE_KEY="value"
 
+# Generates a new UUID
+generate_uuid()
+{
+    cat /proc/sys/kernel/random/uuid
+}
+
+# Trims all leading and trailing whitespace from a string
+trim() {
+    local var="$*"
+    # remove leading whitespace characters
+    var="${var#"${var%%[![:space:]]*}"}"
+    # remove trailing whitespace characters
+    var="${var%"${var##*[![:space:]]}"}"
+    echo -n "$var"
+}
+
 # Deploys a certificate given the secret name, secret namespace, private key file and certificate file
 deploy_cert()
 {
@@ -20,12 +36,15 @@ get_data()
     DATA_ITEM_NAME=$1
     DATA_ITEM_DIR=$2
 
-    DATA_ITEM=$(kubectl get secrets $DATA_ITEM_NAME --ignore-not-found -o "go-template={{ .data.${VALUE_KEY} }}")
+    DATA_ITEM=$(trim "$(kubectl get secrets $DATA_ITEM_NAME --ignore-not-found -o "go-template={{ .data.${VALUE_KEY} }}")")
 
-    # Restore file fragment from base64 encoded string
-    base64 --decode $DATA_ITEM > $DATA_ITEM_DIR/$DATA_ITEM_NAME
+    if [ -z "$DATA_ITEM" ]; then
+        # Restore file fragment from base64 encoded string
+        OUTPUT_FILE=$DATA_ITEM_DIR/$DATA_ITEM_NAME
+        base64 --decode $DATA_ITEM > $OUTPUT_FILE
 
-    echo "${DATA_ITEM_DIR}/${DATA_ITEM_NAME}"
+        echo -n "$OUTPUT_FILE"
+    fi
 }
 
 # Saves a persisted data fragment, given its name and filepath
@@ -43,10 +62,4 @@ delete_data()
     DATA_ITEM_NAME=$1
 
     kubectl delete secret --ignore-not-found --force --now $DATA_ITEM_NAME
-}
-
-# Generates a new UUID
-generate_uuid()
-{
-    cat /proc/sys/kernel/random/uuid
 }
