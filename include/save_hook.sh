@@ -25,6 +25,7 @@ rm -rf $FRAGMENTS_DIR/*
 split --unbuffered --numeric-suffixes --suffix-length=3 --bytes=$DATA_SIZE_BYTES "$DATA_TAR" "$FRAGMENTS_DIR/$DATA_TAR."
 
 # Iterate over file fragments in order
+echo "Storing file fragments..."
 METADATA=""
 for FILEPATH in "$FRAGMENTS_DIR"/*; do
     # Get the filename without the path
@@ -36,9 +37,13 @@ for FILEPATH in "$FRAGMENTS_DIR"/*; do
     # Save the data fragment in the file
     save_data "$FILENAME" "$FILEPATH"
 done
+echo "Finished storing file fragments"
+echo ""
 
 # If there were any data fragments that were saved, save the metadata as well
 if ! [ -z "$METADATA" ]; then
+    echo "Saving file fragment metadata..."
+
     # First get the names of old data fragments (from the old metadata) that we no longer need
     OLD_FRAGMENTS=$(get_data "$PERSIST_NAME" .)
 
@@ -52,6 +57,9 @@ if ! [ -z "$METADATA" ]; then
             delete_data "$OLD_FRAGMENT_NAME"
         fi
     done < $OLD_FRAGMENTS
+
+    echo "Finished saving file fragment metadata"
+    echo ""
 fi
 
 # Clean up temporary files
