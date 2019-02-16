@@ -66,8 +66,7 @@ RUN find ./ -type f -exec chmod +x {} \;
 # Set the environment variables that will help to store persisted data
 # WARNING: These MUST NOT be modified
 ENV \
-    # The name of the Kubernetes secret that holds the names of the other secrets
-    # which contain fragments of the persisted data
+    # The name to use when persisting cert data
     PERSIST_NAME="acme-cert-renewal" \
     # The location of helper functions that are used by the hook scripts
     HELPER_FUNC="$WORKING_DIR/k8s_helpers.sh"

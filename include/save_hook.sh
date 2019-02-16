@@ -10,14 +10,14 @@ DATA_SIZE_BYTES=500000
 . $HELPER_FUNC
 
 # Create tar archive from folder - give it a randomized name so it doesn't overwrite any existing files
-DATA_TAR=$PERSIST_NAME.$(generate_uuid).tar.gz
+DATA_TAR="${PERSIST_NAME}.$(generate_uuid).tar.gz"
 echo "Creating tar file..."
 tar -czvf $DATA_TAR -C $INPUT_DIR .
 echo "Finished creating tar file"
 echo ""
 
 # Clean working directory
-FRAGMENTS_DIR=fragments
+FRAGMENTS_DIR="fragments"
 mkdir -p $FRAGMENTS_DIR
 rm -rf $FRAGMENTS_DIR/*
 
@@ -26,13 +26,14 @@ split --unbuffered --numeric-suffixes --suffix-length=3 --bytes=$DATA_SIZE_BYTES
 
 # Iterate over file fragments in order
 echo "Storing file fragments..."
-METADATA=""
+FRAGMENT_MANIFEST_FILE="fragment_manifest.txt"
+rm -rf $FRAGMENT_MANIFEST_FILE
 for FILEPATH in "$FRAGMENTS_DIR"/*; do
     # Get the filename without the path
     FILENAME=$(basename $FILEPATH)
 
     # Save this filename as a line in the metadata variable
-    METADATA="${METADATA}${FILENAME}"$'\n'
+    echo "$FILENAME" >> $FRAGMENT_MANIFEST_FILE
 
     # Save the data fragment in the file
     save_data "$FILENAME" "$FILEPATH"
@@ -41,14 +42,14 @@ echo "Finished storing file fragments"
 echo ""
 
 # If there were any data fragments that were saved, save the metadata as well
-if ! [ -z "$METADATA" ]; then
+if test -f "$FRAGMENT_MANIFEST_FILE"; then
     echo "Saving file fragment metadata..."
 
     # First get the names of old data fragments (from the old metadata) that we no longer need
     OLD_FRAGMENTS=$(get_data "$PERSIST_NAME" .)
 
     # Save the metadata (i.e. overwrite the old metadata)
-    save_data "$PERSIST_NAME" "$METADATA"
+    save_data "${PERSIST_NAME}.manifest" "$FRAGMENT_MANIFEST_FILE"
 
     # Delete the old data fragments
     while IFS="" read -r OLD_FRAGMENT_NAME; do
