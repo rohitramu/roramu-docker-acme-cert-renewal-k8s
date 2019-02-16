@@ -51,13 +51,15 @@ if test -f "$FRAGMENT_MANIFEST_FILE"; then
     # Save the metadata (i.e. overwrite the old metadata)
     save_data "${PERSIST_NAME}.manifest" "$FRAGMENT_MANIFEST_FILE"
 
-    # Delete the old data fragments
-    while IFS="" read -r OLD_FRAGMENT_NAME; do
-        if ! [ -z "$OLD_FRAGMENT_NAME" ]; then
-            # Delete the old data fragment
-            delete_data "$OLD_FRAGMENT_NAME"
-        fi
-    done < $OLD_FRAGMENTS
+    # Delete the old data fragments if we found an old manifest
+    if test -f $OLD_FRAGMENTS; then
+        while IFS="" read -r OLD_FRAGMENT_NAME; do
+            if ! [ -z "$OLD_FRAGMENT_NAME" ]; then
+                # Delete the old data fragment
+                delete_data "$OLD_FRAGMENT_NAME"
+            fi
+        done < $OLD_FRAGMENTS
+    fi
 
     echo "Finished saving file fragment metadata"
     echo ""
