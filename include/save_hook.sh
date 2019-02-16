@@ -11,7 +11,10 @@ DATA_SIZE_BYTES=500000
 
 # Create tar archive from folder - give it a randomized name so it doesn't overwrite any existing files
 DATA_TAR=$PERSIST_NAME.$(generate_uuid).tar.gz
-tar -czvf $DATA_TAR $INPUT_DIR/
+echo "Creating tar file..."
+tar -czvf $DATA_TAR -C $INPUT_DIR .
+echo "Finished creating tar file"
+echo ""
 
 # Clean working directory
 FRAGMENTS_DIR=fragments
