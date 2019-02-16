@@ -7,17 +7,17 @@ OUTPUT_DIR=$1
 . $HELPER_FUNC
 
 # Get metadata object
-TO_GET=$(echo $(get_data "$PERSIST_NAME" .))
+TO_GET=$(get_data "$PERSIST_NAME" .)
 
 # Only attempt to restore if we found the value
-if [ -z "$TO_GET" ] || ! test -f "$TO_GET"; then
+if ! test -f "$TO_GET"; then
     echo "WARNING: No data was found that could be restored.  Continuing without loading files..."
     exit
 fi
 
 # Print the data we found
 echo "Found data fragments to load:"
-echo $TO_GET
+cat $TO_GET
 echo ""
 
 # Clean working directory
@@ -35,7 +35,7 @@ done < $TO_GET
 
 # Combine data fragments into a single tar file
 DATA_TAR=restored_data.tar.gz
-cat $FRAGMENTS_DIR/* > $DATA_TAR
+cat "$FRAGMENTS_DIR"/* > $DATA_TAR
 
 # Extract restored tar file to output folder
 tar -xzvf $DATA_TAR -C $OUTPUT_DIR/

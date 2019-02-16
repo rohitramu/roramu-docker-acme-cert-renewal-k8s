@@ -18,7 +18,7 @@ trim() {
 
     # remove trailing whitespace characters
     var="${var%"${var##*[![:space:]]}"}"
-    
+
     echo -n "$var"
 }
 
@@ -41,7 +41,7 @@ get_data()
 
     DATA_ITEM=$(trim "$(kubectl get secrets $DATA_ITEM_NAME --ignore-not-found -o "go-template={{ .data.${VALUE_KEY} }}")")
 
-    if [ -z "$DATA_ITEM" ]; then
+    if ! [ -z "$DATA_ITEM" ]; then
         # Restore file fragment from base64 encoded string
         OUTPUT_FILE=$DATA_ITEM_DIR/$DATA_ITEM_NAME
         base64 --decode $DATA_ITEM > $OUTPUT_FILE

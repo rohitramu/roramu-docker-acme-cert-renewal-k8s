@@ -25,7 +25,7 @@ rm -rf $FRAGMENTS_DIR/*
 split --unbuffered --numeric-suffixes --suffix-length=3 --bytes=$DATA_SIZE_BYTES "$DATA_TAR" "$FRAGMENTS_DIR/$DATA_TAR."
 
 # Iterate over file fragments in order
-echo "Storing file fragments..."
+echo "Saving file fragments..."
 FRAGMENT_MANIFEST_FILE="fragment_manifest.txt"
 rm -rf $FRAGMENT_MANIFEST_FILE
 for FILEPATH in "$FRAGMENTS_DIR"/*; do
@@ -43,22 +43,22 @@ echo ""
 
 # If there were any data fragments that were saved, save the metadata as well
 if test -f "$FRAGMENT_MANIFEST_FILE"; then
-    echo "Saving file fragment metadata..."
+    echo "Saving file fragment manifest..."
 
     # First get the names of old data fragments (from the old metadata) that we no longer need
-    OLD_FRAGMENTS=$(get_data "$PERSIST_NAME" .)
+    OLD_FRAGMENTS_FILE=$(get_data "$PERSIST_NAME" .)
 
     # Save the metadata (i.e. overwrite the old metadata)
-    save_data "${PERSIST_NAME}.manifest" "$FRAGMENT_MANIFEST_FILE"
+    save_data "$PERSIST_NAME" "$FRAGMENT_MANIFEST_FILE"
 
     # Delete the old data fragments if we found an old manifest
-    if test -f $OLD_FRAGMENTS; then
+    if test -f $OLD_FRAGMENTS_FILE; then
         while IFS="" read -r OLD_FRAGMENT_NAME; do
             if ! [ -z "$OLD_FRAGMENT_NAME" ]; then
                 # Delete the old data fragment
                 delete_data "$OLD_FRAGMENT_NAME"
             fi
-        done < $OLD_FRAGMENTS
+        done < $OLD_FRAGMENTS_FILE
     fi
 
     echo "Finished saving file fragment metadata"
