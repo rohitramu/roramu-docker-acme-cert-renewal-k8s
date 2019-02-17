@@ -22,6 +22,23 @@ trim() {
     echo -n "$var"
 }
 
+full_path()
+{
+    RELATIVE_PATH=$1
+
+    echo -n $(pwd)/$RELATIVE_PATH
+}
+
+get_manifest_name()
+{
+    echo -n "${PERSIST_NAME}.manifest"
+}
+
+new_tar_name()
+{
+    echo -n "${PERSIST_NAME}.$(generate_uuid).tar.gz"
+}
+
 # Deploys a certificate given the secret name, secret namespace, private key file and certificate file
 deploy_cert()
 {
@@ -39,13 +56,16 @@ get_data()
     DATA_ITEM_NAME=$1
     DATA_ITEM_DIR=$2
 
-    DATA_ITEM=$(trim "$(kubectl get secrets $DATA_ITEM_NAME --ignore-not-found -o "go-template={{ .data.${VALUE_KEY} }}")")
+    DATA_ITEM=$(trim $(kubectl get secrets $DATA_ITEM_NAME --ignore-not-found -o "go-template={{ .data.${VALUE_KEY} }}"))
 
     if ! [ -z "$DATA_ITEM" ]; then
-        # Restore file fragment from base64 encoded string
+        # Get file fragment
         OUTPUT_FILE=$DATA_ITEM_DIR/$DATA_ITEM_NAME
-        base64 --decode $DATA_ITEM > $OUTPUT_FILE
 
+        # Base64 decode the result (kubectl encodes values as base64)
+        echo $DATA_ITEM | base64 --decode > $OUTPUT_FILE
+
+        # Return file location
         echo -n "$OUTPUT_FILE"
     fi
 }

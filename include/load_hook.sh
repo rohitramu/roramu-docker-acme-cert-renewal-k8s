@@ -6,8 +6,9 @@ OUTPUT_DIR=$1
 # Load the helper functions
 . $HELPER_FUNC
 
-# Get metadata object
-TO_GET=$(get_data "$PERSIST_NAME" .)
+# Get manifest
+MANIFEST_NAME=$(get_manifest_name)
+TO_GET=$(get_data "$MANIFEST_NAME" .)
 
 # Only attempt to restore if we found the value
 if ! test -f "$TO_GET"; then
@@ -17,13 +18,14 @@ fi
 
 # Print the data we found
 echo "Found data fragments to load:"
+echo "==START=="
 cat $TO_GET
-echo ""
+echo "==END=="
 
 # Clean working directory
 FRAGMENTS_DIR=fragments
-mkdir -p $FRAGMENTS_DIR
-rm -rf $FRAGMENTS_DIR/*
+rm -rf $FRAGMENTS_DIR
+mkdir $FRAGMENTS_DIR
 
 # Get data fragments
 while IFS="" read -r DATA_FRAGMENT_NAME; do
@@ -35,7 +37,7 @@ done < $TO_GET
 
 # Combine data fragments into a single tar file
 DATA_TAR=restored_data.tar.gz
-cat "$FRAGMENTS_DIR"/* > $DATA_TAR
+cat $FRAGMENTS_DIR/* > $DATA_TAR
 
 # Extract restored tar file to output folder
 tar -xzvf $DATA_TAR -C $OUTPUT_DIR/
